@@ -1,0 +1,206 @@
+openapi: 3.0.0
+servers:
+  - description: Cluster Endpoint
+    url: /api
+info:
+  description: Specialist appointment booking management for Web-In-Cloud system
+  version: '1.0.0'
+  title: Specialist Booking API
+  contact:
+    email: xdrga@stuba.sk
+tags:
+  - name: specialistBooking
+paths:
+  '/specialist-booking/{clinicId}/appointments':
+    get:
+      tags: [specialistBooking]
+      operationId: getAppointments
+      parameters:
+        - $ref: '#/components/parameters/ClinicId'
+      responses:
+        '200':
+          description: appointments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Appointment'
+    post:
+      tags: [specialistBooking]
+      operationId: createAppointment
+      parameters:
+        - $ref: '#/components/parameters/ClinicId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Appointment'
+      responses:
+        '201':
+          description: created appointment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Appointment'
+  '/specialist-booking/{clinicId}/appointments/{appointmentId}':
+    get:
+      tags: [specialistBooking]
+      operationId: getAppointment
+      parameters:
+        - $ref: '#/components/parameters/ClinicId'
+        - $ref: '#/components/parameters/AppointmentId'
+      responses:
+        '200':
+          description: appointment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Appointment'
+    put:
+      tags: [specialistBooking]
+      operationId: updateAppointment
+      parameters:
+        - $ref: '#/components/parameters/ClinicId'
+        - $ref: '#/components/parameters/AppointmentId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Appointment'
+      responses:
+        '200':
+          description: updated appointment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Appointment'
+    delete:
+      tags: [specialistBooking]
+      operationId: deleteAppointment
+      parameters:
+        - $ref: '#/components/parameters/ClinicId'
+        - $ref: '#/components/parameters/AppointmentId'
+      responses:
+        '204':
+          description: deleted appointment
+  '/specialist-booking/{clinicId}/time-slots':
+    get:
+      tags: [specialistBooking]
+      operationId: getTimeSlots
+      parameters:
+        - $ref: '#/components/parameters/ClinicId'
+      responses:
+        '200':
+          description: time slots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TimeSlot'
+    post:
+      tags: [specialistBooking]
+      operationId: createTimeSlot
+      parameters:
+        - $ref: '#/components/parameters/ClinicId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeSlot'
+      responses:
+        '201':
+          description: created slot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeSlot'
+  '/specialist-booking/{clinicId}/time-slots/{slotId}':
+    get:
+      tags: [specialistBooking]
+      operationId: getTimeSlot
+      parameters:
+        - $ref: '#/components/parameters/ClinicId'
+        - $ref: '#/components/parameters/SlotId'
+      responses:
+        '200':
+          description: time slot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeSlot'
+    put:
+      tags: [specialistBooking]
+      operationId: updateTimeSlot
+      parameters:
+        - $ref: '#/components/parameters/ClinicId'
+        - $ref: '#/components/parameters/SlotId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeSlot'
+      responses:
+        '200':
+          description: updated slot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeSlot'
+    delete:
+      tags: [specialistBooking]
+      operationId: deleteTimeSlot
+      parameters:
+        - $ref: '#/components/parameters/ClinicId'
+        - $ref: '#/components/parameters/SlotId'
+      responses:
+        '204':
+          description: deleted slot
+components:
+  parameters:
+    ClinicId:
+      in: path
+      name: clinicId
+      required: true
+      schema: { type: string }
+    AppointmentId:
+      in: path
+      name: appointmentId
+      required: true
+      schema: { type: string }
+    SlotId:
+      in: path
+      name: slotId
+      required: true
+      schema: { type: string }
+  schemas:
+    Appointment:
+      type: object
+      required: [id, patientId, patientName, startsAt, durationMinutes, examinationType, status]
+      properties:
+        id: { type: string }
+        patientId: { type: string }
+        patientName: { type: string }
+        patientEmail: { type: string }
+        referringDoctor: { type: string }
+        startsAt: { type: string, format: date-time }
+        durationMinutes: { type: integer, format: int32 }
+        examinationType: { type: string }
+        status: { type: string }
+        note: { type: string }
+    TimeSlot:
+      type: object
+      required: [id, startsAt, durationMinutes, capacity, booked, examinationType, urgentBlocked]
+      properties:
+        id: { type: string }
+        startsAt: { type: string, format: date-time }
+        durationMinutes: { type: integer, format: int32 }
+        capacity: { type: integer, format: int32 }
+        booked: { type: integer, format: int32 }
+        examinationType: { type: string }
+        urgentBlocked: { type: boolean }

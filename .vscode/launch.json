@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Specialist Booking API",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/cmd/specialist-booking-api-service",
+      "env": {
+        "SPECIALIST_BOOKING_API_PORT": "8080",
+        "SPECIALIST_BOOKING_API_MONGODB_HOST": "localhost",
+        "SPECIALIST_BOOKING_API_MONGODB_PORT": "27017",
+        "SPECIALIST_BOOKING_API_MONGODB_USERNAME": "root",
+        "SPECIALIST_BOOKING_API_MONGODB_PASSWORD": "example"
+      }
+    }
+  ]
+}
