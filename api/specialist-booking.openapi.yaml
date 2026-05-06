@@ -1,7 +1,7 @@
 openapi: 3.0.0
 servers:
   - description: Cluster Endpoint
-    url: /api
+    url: /specialist-booking-api
 info:
   description: Specialist appointment booking management for Web-In-Cloud system
   version: '1.0.0'
