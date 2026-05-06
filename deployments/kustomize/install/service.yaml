@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: specialist-booking-webapi
+spec:
+  selector:
+    pod: specialist-booking-webapi-label
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: webapi-port
