@@ -295,7 +295,14 @@ func (a *BookingApi) CreateAppointment(c *gin.Context) {
 		return
 	}
 	span.SetAttributes(attribute.String("appointment.id", appointment.Id))
+	appointment.Status = "requested"
+	appointment.AssignedSlotId = ""
 	clinic.Appointments = append(clinic.Appointments, appointment)
+	appointmentIndex := len(clinic.Appointments) - 1
+	if _, assigned := assignBestSlot(clinic, appointmentIndex); !assigned {
+		ensureWaitingListEntry(clinic, clinic.Appointments[appointmentIndex])
+	}
+	appointment = clinic.Appointments[appointmentIndex]
 	if err := storeFromContext(c).UpdateDocument(c.Request.Context(), clinic.Id, clinic); err != nil {
 		logger.Error().Err(err).Str("appointmentId", appointment.Id).Msg("Failed to store created appointment")
 		span.SetStatus(codes.Error, err.Error())
