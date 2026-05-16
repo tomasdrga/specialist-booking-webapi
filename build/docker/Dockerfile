@@ -1,5 +1,7 @@
 FROM golang:latest AS build
 
+ENV PATH="/usr/local/go/bin:${PATH}"
+
 WORKDIR /app
 
 COPY go.mod go.sum ./
@@ -31,6 +33,13 @@ ENV SPECIALIST_BOOKING_API_MONGODB_COLLECTION=clinics
 ENV SPECIALIST_BOOKING_API_MONGODB_USERNAME=root
 ENV SPECIALIST_BOOKING_API_MONGODB_PASSWORD=
 ENV SPECIALIST_BOOKING_API_MONGODB_TIMEOUT_SECONDS=5
+
+# to avoid connection errors in standalone case otel exporters are disabled by default
+ENV OTEL_TRACES_EXPORTER=none
+ENV OTEL_METRICS_EXPORTER=none
+ENV OTEL_LOGS_EXPORTER=none
+ENV LOG_LEVEL=info
+ENV OTEL_SERVICE_NAME=specialist-booking-api
 
 COPY --from=build /app/specialist-booking-webapi-srv ./
 

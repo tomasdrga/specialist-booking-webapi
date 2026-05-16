@@ -59,6 +59,10 @@ spec:
           ports:
             - name: webapi-port
               containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: otel-params
+                optional: true
           env:
             - name: SPECIALIST_BOOKING_API_ENVIRONMENT
               value: production
