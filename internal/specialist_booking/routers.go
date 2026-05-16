@@ -41,6 +41,8 @@ func getRoutes(handleFunctions ApiHandleFunctions) []Route {
 		{"GetAppointment", http.MethodGet, "/api/specialist-booking/:clinicId/appointments/:appointmentId", api.GetAppointment},
 		{"UpdateAppointment", http.MethodPut, "/api/specialist-booking/:clinicId/appointments/:appointmentId", api.UpdateAppointment},
 		{"DeleteAppointment", http.MethodDelete, "/api/specialist-booking/:clinicId/appointments/:appointmentId", api.DeleteAppointment},
+		{"AssignBestSlot", http.MethodPost, "/api/specialist-booking/:clinicId/appointments/:appointmentId/assign-best-slot", api.AssignBestSlot},
+		{"GetWaitingList", http.MethodGet, "/api/specialist-booking/:clinicId/waiting-list", api.GetWaitingList},
 		{"GetTimeSlots", http.MethodGet, "/api/specialist-booking/:clinicId/time-slots", api.GetTimeSlots},
 		{"CreateTimeSlot", http.MethodPost, "/api/specialist-booking/:clinicId/time-slots", api.CreateTimeSlot},
 		{"GetTimeSlot", http.MethodGet, "/api/specialist-booking/:clinicId/time-slots/:slotId", api.GetTimeSlot},

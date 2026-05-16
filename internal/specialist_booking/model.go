@@ -12,6 +12,7 @@ type Appointment struct {
 	DurationMinutes int32     `json:"durationMinutes" bson:"durationMinutes"`
 	ExaminationType string    `json:"examinationType" bson:"examinationType"`
 	Status          string    `json:"status" bson:"status"`
+	AssignedSlotId  string    `json:"assignedSlotId,omitempty" bson:"assignedSlotId,omitempty"`
 	Note            string    `json:"note,omitempty" bson:"note,omitempty"`
 }
 
@@ -25,8 +26,16 @@ type TimeSlot struct {
 	UrgentBlocked   bool      `json:"urgentBlocked" bson:"urgentBlocked"`
 }
 
+type WaitingListEntry struct {
+	AppointmentId   string    `json:"appointmentId" bson:"appointmentId"`
+	PatientName     string    `json:"patientName" bson:"patientName"`
+	ExaminationType string    `json:"examinationType" bson:"examinationType"`
+	RequestedAt     time.Time `json:"requestedAt" bson:"requestedAt"`
+}
+
 type Clinic struct {
-	Id           string        `json:"id" bson:"id"`
-	Appointments []Appointment `json:"appointments" bson:"appointments"`
-	TimeSlots    []TimeSlot    `json:"timeSlots" bson:"timeSlots"`
+	Id           string             `json:"id" bson:"id"`
+	Appointments []Appointment      `json:"appointments" bson:"appointments"`
+	TimeSlots    []TimeSlot         `json:"timeSlots" bson:"timeSlots"`
+	WaitingList  []WaitingListEntry `json:"waitingList,omitempty" bson:"waitingList,omitempty"`
 }

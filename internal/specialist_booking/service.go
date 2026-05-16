@@ -24,6 +24,7 @@ func defaultClinic(id string) Clinic {
 			{Id: "slot-002", StartsAt: now.Add(90 * time.Minute), DurationMinutes: 45, Capacity: 1, Booked: 1, ExaminationType: "Neurologická konzultácia", UrgentBlocked: false},
 			{Id: "slot-003", StartsAt: now.Add(150 * time.Minute), DurationMinutes: 30, Capacity: 1, Booked: 0, ExaminationType: "Dermatologická kontrola", UrgentBlocked: true},
 		},
+		WaitingList: []WaitingListEntry{},
 	}
 }
 

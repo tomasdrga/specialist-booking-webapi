@@ -4,7 +4,7 @@ servers:
     url: /specialist-booking-api
 info:
   description: Specialist appointment booking management for Web-In-Cloud system
-  version: '1.0.0'
+  version: '1.1.0'
   title: Specialist Booking API
   contact:
     email: xdrga@stuba.sk
@@ -26,6 +26,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Appointment'
+        '500':
+          $ref: '#/components/responses/InternalError'
     post:
       tags: [specialistBooking]
       operationId: createAppointment
@@ -44,6 +46,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Appointment'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
   '/specialist-booking/{clinicId}/appointments/{appointmentId}':
     get:
       tags: [specialistBooking]
@@ -58,6 +67,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Appointment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
     put:
       tags: [specialistBooking]
       operationId: updateAppointment
@@ -77,6 +90,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Appointment'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
     delete:
       tags: [specialistBooking]
       operationId: deleteAppointment
@@ -86,6 +105,56 @@ paths:
       responses:
         '204':
           description: deleted appointment
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  '/specialist-booking/{clinicId}/appointments/{appointmentId}/assign-best-slot':
+    post:
+      tags: [specialistBooking]
+      operationId: assignBestSlot
+      parameters:
+        - $ref: '#/components/parameters/ClinicId'
+        - $ref: '#/components/parameters/AppointmentId'
+      responses:
+        '200':
+          description: slot assigned or already assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignBestSlotResponse'
+        '202':
+          description: no available slot, appointment put on waiting list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignBestSlotResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  '/specialist-booking/{clinicId}/waiting-list':
+    get:
+      tags: [specialistBooking]
+      operationId: getWaitingList
+      parameters:
+        - $ref: '#/components/parameters/ClinicId'
+      responses:
+        '200':
+          description: waiting list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WaitingListEntry'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
   '/specialist-booking/{clinicId}/time-slots':
     get:
       tags: [specialistBooking]
@@ -101,6 +170,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TimeSlot'
+        '500':
+          $ref: '#/components/responses/InternalError'
     post:
       tags: [specialistBooking]
       operationId: createTimeSlot
@@ -119,6 +190,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TimeSlot'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
   '/specialist-booking/{clinicId}/time-slots/{slotId}':
     get:
       tags: [specialistBooking]
@@ -133,6 +211,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TimeSlot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
     put:
       tags: [specialistBooking]
       operationId: updateTimeSlot
@@ -152,6 +234,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TimeSlot'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
     delete:
       tags: [specialistBooking]
       operationId: deleteTimeSlot
@@ -161,6 +249,11 @@ paths:
       responses:
         '204':
           description: deleted slot
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
 components:
   parameters:
     ClinicId:
@@ -178,7 +271,41 @@ components:
       name: slotId
       required: true
       schema: { type: string }
+
+  responses:
+    NotFound:
+      description: resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ValidationError:
+      description: invalid payload
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ConflictError:
+      description: invalid state conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
   schemas:
+    ErrorResponse:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string, example: VALIDATION_ERROR }
+        message: { type: string, example: patientName is required }
+
     Appointment:
       type: object
       required: [id, patientId, patientName, startsAt, durationMinutes, examinationType, status]
@@ -186,21 +313,44 @@ components:
         id: { type: string }
         patientId: { type: string }
         patientName: { type: string }
-        patientEmail: { type: string }
+        patientEmail: { type: string, format: email }
         referringDoctor: { type: string }
         startsAt: { type: string, format: date-time }
-        durationMinutes: { type: integer, format: int32 }
+        durationMinutes: { type: integer, format: int32, minimum: 1 }
         examinationType: { type: string }
-        status: { type: string }
+        status:
+          type: string
+          enum: [requested, confirmed, completed, cancelled]
+        assignedSlotId: { type: string }
         note: { type: string }
+
     TimeSlot:
       type: object
       required: [id, startsAt, durationMinutes, capacity, booked, examinationType, urgentBlocked]
       properties:
         id: { type: string }
         startsAt: { type: string, format: date-time }
-        durationMinutes: { type: integer, format: int32 }
-        capacity: { type: integer, format: int32 }
-        booked: { type: integer, format: int32 }
+        durationMinutes: { type: integer, format: int32, minimum: 1 }
+        capacity: { type: integer, format: int32, minimum: 1 }
+        booked: { type: integer, format: int32, minimum: 0 }
         examinationType: { type: string }
         urgentBlocked: { type: boolean }
+
+    WaitingListEntry:
+      type: object
+      required: [appointmentId, patientName, examinationType, requestedAt]
+      properties:
+        appointmentId: { type: string }
+        patientName: { type: string }
+        examinationType: { type: string }
+        requestedAt: { type: string, format: date-time }
+
+    AssignBestSlotResponse:
+      type: object
+      required: [appointmentId, assigned, waitingList, message]
+      properties:
+        appointmentId: { type: string }
+        assigned: { type: boolean }
+        slotId: { type: string }
+        waitingList: { type: boolean }
+        message: { type: string }
