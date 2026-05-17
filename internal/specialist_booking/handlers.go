@@ -344,7 +344,7 @@ func (a *BookingApi) UpdateAppointment(c *gin.Context) {
 		if clinic.Appointments[index].Id == appointment.Id {
 			appointment.AssignedSlotId = clinic.Appointments[index].AssignedSlotId
 			clinic.Appointments[index] = appointment
-			if appointment.Status == "cancelled" {
+			if appointment.Status != "requested" {
 				removeWaitingListEntry(clinic, appointment.Id)
 			}
 			if err := storeFromContext(c).UpdateDocument(c.Request.Context(), clinic.Id, clinic); err != nil {
